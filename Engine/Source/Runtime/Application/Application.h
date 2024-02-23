@@ -23,6 +23,8 @@ public:
     
     static CApplication& GetInstance() { return *m_ApplicationInstance; }
 
+    const CApplicationSpecification& GetSpecification() const { return m_ApplicationSpecification; }
+
     const CCommandLineArguments& GetCommandLineArguments() const { return m_CommandLineArguments; }
 private:
     inline static CApplication* m_ApplicationInstance = nullptr;

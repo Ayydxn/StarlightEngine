@@ -1,10 +1,10 @@
 ﻿#include "Application/Application.h"
 #include "Application/ApplicationEntryPoint.h"
 
-class FMoonlightEditorApplication : public CApplication
+class CStarlgihtEditorApplication : public CApplication
 {
 public:
-    FMoonlightEditorApplication(const CApplicationSpecification& Specification)
+    CStarlgihtEditorApplication(const CApplicationSpecification& Specification)
         : CApplication(Specification) {}
 };
 
@@ -14,5 +14,5 @@ CApplication* CreateApplication(char** Arguments, int32 ArgumentCount)
     StarlightEditorApplicationSpecification.Name = "Starlight Editor";
     StarlightEditorApplicationSpecification.CommandLineArguments = CCommandLineArguments(Arguments, ArgumentCount);
 
-    return new FMoonlightEditorApplication(StarlightEditorApplicationSpecification);
+    return new CStarlgihtEditorApplication(StarlightEditorApplicationSpecification);
 }

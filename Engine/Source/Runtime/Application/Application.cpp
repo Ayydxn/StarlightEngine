@@ -8,22 +8,14 @@ CApplication::CApplication(const CApplicationSpecification& Specification)
 {
     m_ApplicationInstance = this;
 
-    std::cout << "Welcome to " << Specification.Name << "!\n";
-    std::cout << "Command Line Arguments:\n";
+    CLogging::Initialize();
 
-    if (!m_CommandLineArguments.IsEmpty())
-    {
-        for (const std::string& CommandLineArgument : m_CommandLineArguments)
-            std::cout << "  " << CommandLineArgument << "\n";
-    }
-    else
-    {
-        std::cout << "  No command line arguments were passed! :(\n";
-    }
+    ENGINE_LOG_INFO_TAG("Core", "Initializing Starlight Engine...");
 }
 
 CApplication::~CApplication()
 {
+    ENGINE_LOG_INFO_TAG("Core", "Shutting down...");
 }
 
 void CApplication::Start()

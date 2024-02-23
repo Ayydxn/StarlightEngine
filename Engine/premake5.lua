@@ -19,6 +19,8 @@ project "Starlight Engine"
 
     includedirs
     {
+        "%{IncludeDir.spdlog}",
+        
         "%{prj.location}/Source",
         "%{prj.location}/Source/Runtime",
         "%{prj.location}/Source/Runtime/Core"

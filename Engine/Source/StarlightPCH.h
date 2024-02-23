@@ -24,6 +24,10 @@
 #include <utility>
 #include <vector>
 
+#include "Runtime/Core/CoreTypes.h"
+#include "Runtime/Core/Logging/Logging.h"
+#include "Runtime/Core/Misc/AssertionMacros.h"
+
 #ifdef STARLIGHT_PLATFORM_WIN64
     #include <Windows.h>
     #include <WinUser.h>
