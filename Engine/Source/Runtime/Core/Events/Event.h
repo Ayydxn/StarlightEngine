@@ -68,8 +68,3 @@ public:
 private:
     IEvent& m_Event;
 };
-
-inline std::ostream& operator<<(std::ostream& OutputStream, const IEvent& Event)
-{
-    return OutputStream << Event.ToString();
-}
