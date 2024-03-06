@@ -56,3 +56,7 @@ group ""
 group "Tools"
     include "Editor"
 group ""
+
+group "Dependencies"
+    include "Engine/ThirdParty/GLFW"
+group ""

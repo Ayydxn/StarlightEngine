@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "Window.h"
 #include "Core/Misc/CommandLineArguments.h"
 #include "Events/Event.h"
 
@@ -10,7 +11,13 @@
 struct CApplicationSpecification
 {
     std::string Name = "Starlight Engine";
-
+    uint32 WindowWidth = 1600;
+    uint32 WindowHeight = 900;
+    EWindowMode WindowMode = EWindowMode::Windowed;
+    bool bEnableVSync = true;
+    bool bEnableWindowDecoration = true;
+    bool bEnableWindowResizing = true;
+    
     CCommandLineArguments CommandLineArguments;
 };
 
@@ -43,6 +50,8 @@ private:
 private:
     inline static CApplication* m_ApplicationInstance = nullptr;
 
+    std::shared_ptr<IWindow> m_ApplicationWindow = nullptr;
+    
     CApplicationSpecification m_ApplicationSpecification;
     CCommandLineArguments m_CommandLineArguments;
 

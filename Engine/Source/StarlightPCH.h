@@ -30,5 +30,6 @@
 
 #ifdef STARLIGHT_PLATFORM_WIN64
     #include <Windows.h>
+    #include <Windowsx.h>
     #include <WinUser.h>
 #endif
