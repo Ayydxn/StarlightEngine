@@ -3,12 +3,14 @@
 #include "Events/KeyboardEvents.h"
 #include "Events/MouseEvents.h"
 #include "Events/WindowEvents.h"
+#include "Input/CoreInputTypes.h"
+#include "Input/Input.h"
 
 #include <GLFW/glfw3.h>
 
 namespace
 {
-    bool bIsGLFWInitialized = false; 
+    bool bIsGLFWInitialized = false;
 }
 
 CDesktopWindow::~CDesktopWindow()
@@ -64,21 +66,30 @@ void CDesktopWindow::Initialize()
         {
             case GLFW_PRESS:
             {
-                CKeyPressedEvent KeyPressedEvent(Key, false);
+                const CKey PressedKey = CKey::GetKeyFromKeyCode(static_cast<uint16>(Key));
+                CInput::UpdateKeyState(PressedKey, EKeyState::Pressed);
+
+                CKeyPressedEvent KeyPressedEvent(PressedKey, false);
                 WindowState.EventCallbackFunc(KeyPressedEvent);
                 break;
             }
 
             case GLFW_RELEASE:
             {
-                CKeyReleasedEvent KeyReleasedEvent(Key);
+                const CKey ReleasedKey = CKey::GetKeyFromKeyCode(static_cast<uint16>(Key));
+                CInput::UpdateKeyState(ReleasedKey, EKeyState::Released);
+
+                CKeyReleasedEvent KeyReleasedEvent(ReleasedKey);
                 WindowState.EventCallbackFunc(KeyReleasedEvent);
                 break;
             }
 
             case GLFW_REPEAT:
             {
-                CKeyPressedEvent KeyPressedEvent(Key, true);
+                const CKey HeldDownKey = CKey::GetKeyFromKeyCode(static_cast<uint16>(Key));
+                CInput::UpdateKeyState(HeldDownKey, EKeyState::Pressed);
+
+                CKeyPressedEvent KeyPressedEvent(HeldDownKey, true);
                 WindowState.EventCallbackFunc(KeyPressedEvent);
                 break;
             }
@@ -103,14 +114,20 @@ void CDesktopWindow::Initialize()
         {
             case GLFW_PRESS:
             {
-                CMouseButtonPressedEvent MouseButtonPressedEvent(Button);
+                const CKey PressedMouseButton = CKey::GetKeyFromKeyCode(static_cast<uint32>(Button));
+                CInput::UpdateMouseButtonState(PressedMouseButton, EKeyState::Pressed);
+
+                CMouseButtonPressedEvent MouseButtonPressedEvent(PressedMouseButton);
                 WindowState.EventCallbackFunc(MouseButtonPressedEvent);
                 break;
             }
 
             case GLFW_RELEASE:
             {
-                CMouseButtonReleasedEvent MouseButtonReleasedEvent(Button);
+                const CKey ReleasedMouseButton = CKey::GetKeyFromKeyCode(static_cast<uint32>(Button));
+                CInput::UpdateMouseButtonState(ReleasedMouseButton, EKeyState::Released);
+
+                CMouseButtonReleasedEvent MouseButtonReleasedEvent(ReleasedMouseButton);
                 WindowState.EventCallbackFunc(MouseButtonReleasedEvent);
                 break;
             }
@@ -211,7 +228,7 @@ void CDesktopWindow::Maximize() const
 void CDesktopWindow::CenterOnScreen() const
 {
     const GLFWvidmode* VideoMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-    const int32 XPosition = VideoMode->width / 2 - static_cast<int32>(m_WindowState.Width) / 2; 
+    const int32 XPosition = VideoMode->width / 2 - static_cast<int32>(m_WindowState.Width) / 2;
     const int32 YPosition = VideoMode->height / 2 - static_cast<int32>(m_WindowState.Height) / 2;
 
     glfwSetWindowPos(m_WindowHandle, XPosition, YPosition);
@@ -225,7 +242,7 @@ void CDesktopWindow::EnableVSync(bool bEnableVSync)
 void CDesktopWindow::SetWindowMode(EWindowMode NewWindowMode)
 {
     const GLFWvidmode* VideoMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-    
+
     switch (NewWindowMode)
     {
         case EWindowMode::Windowed:
@@ -264,22 +281,22 @@ void CDesktopWindow::EnableResizing(bool bEnableResizing) const
     if (bEnableResizing && !m_WindowState.bIsResizingEnabled)
     {
         glfwSetWindowAttrib(m_WindowHandle, GLFW_RESIZABLE, GLFW_TRUE);
-        
+
         m_WindowState.bIsResizingEnabled = true;
     }
     else if (!bEnableResizing && m_WindowState.bIsResizingEnabled)
     {
         glfwSetWindowAttrib(m_WindowHandle, GLFW_RESIZABLE, GLFW_FALSE);
-        
+
         m_WindowState.bIsResizingEnabled = false;
     }
-    
+
     m_WindowState.bIsResizingEnabled = bEnableResizing;
 }
 
 void CDesktopWindow::SetTitle(const std::string& Title) const
 {
     glfwSetWindowTitle(m_WindowHandle, Title.c_str());
-    
+
     m_WindowState.Title = Title;
 }

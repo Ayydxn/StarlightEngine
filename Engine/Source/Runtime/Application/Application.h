@@ -42,6 +42,8 @@ public:
     
     static CApplication& GetInstance() { return *m_ApplicationInstance; }
 
+    const IWindow& GetWindow() const { return *m_ApplicationWindow; }
+
     const CApplicationSpecification& GetSpecification() const { return m_ApplicationSpecification; }
 
     const CCommandLineArguments& GetCommandLineArguments() const { return m_CommandLineArguments; }

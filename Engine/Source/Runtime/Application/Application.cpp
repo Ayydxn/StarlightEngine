@@ -1,8 +1,9 @@
 ﻿#include "StarlightPCH.h"
 #include "Application.h"
 #include "Events/ApplicationEvents.h"
-#include "Misc/CommandLineParser.h"
 #include "Events/WindowEvents.h"
+#include "Misc/CommandLineParser.h"
+#include "Input/Input.h"
 
 extern bool bIsApplicationRunning;
 
@@ -59,6 +60,8 @@ CApplication::CApplication(const CApplicationSpecification& Specification)
     m_ApplicationWindow->Initialize();
     m_ApplicationWindow->SetEventCallbackFunction([this](IEvent& Event) { return OnEvent(Event); });
 
+    CInput::Initialize();
+    
     DispatchEvent<CApplicationInitializeEvent>();
 }
 
@@ -84,9 +87,6 @@ void CApplication::OnEvent(IEvent& Event)
 
         return true;
     });
-
-    if (Event.GetEventType() != EEventType::MouseMoved)
-        ENGINE_LOG_INFO_TAG("Core", Event.ToString());
 }
 
 void CApplication::Start()
@@ -129,6 +129,9 @@ void CApplication::QueueEvent(EventFunction&& EventFunc)
 
 void CApplication::ProcessEvents()
 {
+    CInput::TransitionPressedKeys();
+    CInput::TransitionPressedMouseButtons();
+    
     m_ApplicationWindow->ProcessEvents();
     
     std::scoped_lock EventQueueMutexLock(m_EventQueueMutex);
