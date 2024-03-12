@@ -2,8 +2,8 @@
 #include "Application.h"
 #include "Events/ApplicationEvents.h"
 #include "Events/WindowEvents.h"
-#include "Misc/CommandLineParser.h"
 #include "Input/Input.h"
+#include "Misc/CommandLineParser.h"
 
 extern bool bIsApplicationRunning;
 
@@ -69,13 +69,19 @@ CApplication::~CApplication()
 {
     ENGINE_LOG_INFO_TAG("Core", "Shutting down...");
 
-    m_ApplicationWindow->SetEventCallbackFunction(nullptr);
+    DispatchEvent<CApplicationShutdownEvent>();
+    
+    m_ApplicationWindow->SetEventCallbackFunction([](IEvent&) {});
+
+    for (ILayer* Layer : m_LayerManager.GetLayers())
+    {
+        Layer->OnDetach();
+        delete Layer;
+    }
 
     // Clearing the event queue.
     // This also ensures that we free the memory used by it.
     std::queue<std::function<void()>>().swap(m_EventQueue);
-
-    DispatchEvent<CApplicationShutdownEvent>();
 }
 
 void CApplication::OnEvent(IEvent& Event)
@@ -87,15 +93,66 @@ void CApplication::OnEvent(IEvent& Event)
 
         return true;
     });
+    
+    for (const auto& Layer : m_LayerManager.GetLayers())
+    {
+        if (Event.bIsHandled)
+            break;
+        
+        Layer->OnEvent(Event);
+    }
 }
 
 void CApplication::Start()
 {
     while (bIsRunning)
     {
+        /*-----------------*/
+        /* --  Updating -- */
+        /*-----------------*/
+
+        OnUpdate();
+
+        for (ILayer* Layer : m_LayerManager.GetLayers())
+            Layer->OnUpdate();
+
         ProcessEvents();
 
+        DispatchEvent<CApplicationUpdateEvent>();
+
+        /*-----------------*/
+        /* -- Rendering -- */
+        /*-----------------*/
+        
+        OnPreRender();
+
+        for (ILayer* Layer : m_LayerManager.GetLayers())
+            Layer->OnPreRender();
+
+        OnRender();
+
+        for (ILayer* Layer : m_LayerManager.GetLayers())
+            Layer->OnRender();
+
+        DispatchEvent<CApplicationRenderEvent>();
+
+        OnPostRender();
+
+        for (ILayer* Layer : m_LayerManager.GetLayers())
+            Layer->OnPostRender();
+
         m_ApplicationWindow->SwapBuffers();
+
+        /*---------------*/
+        /* -- Ticking -- */
+        /*---------------*/
+
+        OnTick();
+
+        for (ILayer* Layer : m_LayerManager.GetLayers())
+            Layer->OnTick();
+
+        DispatchEvent<CApplicationTickEvent>();
     }
 }
 
@@ -125,6 +182,26 @@ void CApplication::QueueEvent(EventFunction&& EventFunc)
     std::scoped_lock EventQueueMutexLock(m_EventQueueMutex);
     
     m_EventQueue.push(EventFunc);
+}
+
+void CApplication::PushLayer(ILayer* Layer)
+{
+    m_LayerManager.PushLayer(Layer);
+}
+
+void CApplication::PushOverlay(ILayer* Overlay)
+{
+    m_LayerManager.PushOverlay(Overlay);
+}
+
+void CApplication::PopLayer(ILayer* Layer)
+{
+    m_LayerManager.PopLayer(Layer);
+}
+
+void CApplication::PopOverlay(ILayer* Overlay)
+{
+    m_LayerManager.PopOverlay(Overlay);
 }
 
 void CApplication::ProcessEvents()

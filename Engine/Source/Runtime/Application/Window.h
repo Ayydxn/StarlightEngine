@@ -57,7 +57,7 @@ public:
 
     virtual void* GetHandle() const = 0;
 
-    static std::shared_ptr<IWindow> Create(const FWindowSpecification& Specification = FWindowSpecification());
+    static std::unique_ptr<IWindow> Create(const FWindowSpecification& Specification = FWindowSpecification());
 protected:
     struct FWindowState
     {

@@ -3,6 +3,7 @@
 #include "Window.h"
 #include "Core/Misc/CommandLineArguments.h"
 #include "Events/Event.h"
+#include "Layers/LayerManager.h"
 
 #include <mutex>
 #include <queue>
@@ -28,7 +29,14 @@ public:
     CApplication(const CApplicationSpecification& Specification = CApplicationSpecification());
     virtual ~CApplication();
 
+    virtual void OnInitialize() {}
+    virtual void OnUpdate() {}
     virtual void OnEvent(IEvent& Event);
+    virtual void OnPreRender() {}
+    virtual void OnRender() {}
+    virtual void OnPostRender() {}
+    virtual void OnTick() {}
+    virtual void OnShutdown() {}
 
     void Start();
     void Restart();
@@ -39,6 +47,11 @@ public:
 
     template<typename EventFunction>
     void QueueEvent(EventFunction&& EventFunc);
+
+    void PushLayer(ILayer* Layer);
+    void PushOverlay(ILayer* Overlay);
+    void PopLayer(ILayer* Layer);
+    void PopOverlay(ILayer* Overlay);
     
     static CApplication& GetInstance() { return *m_ApplicationInstance; }
 
@@ -52,10 +65,11 @@ private:
 private:
     inline static CApplication* m_ApplicationInstance = nullptr;
 
-    std::shared_ptr<IWindow> m_ApplicationWindow = nullptr;
+    std::unique_ptr<IWindow> m_ApplicationWindow = nullptr;
     
     CApplicationSpecification m_ApplicationSpecification;
     CCommandLineArguments m_CommandLineArguments;
+    CLayerManager m_LayerManager;
 
     std::mutex m_EventQueueMutex;
     std::queue<std::function<void()>> m_EventQueue;

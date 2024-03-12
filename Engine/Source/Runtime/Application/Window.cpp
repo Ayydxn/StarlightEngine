@@ -5,7 +5,7 @@
     #include "DesktopWindow.h"
 #endif
 
-std::shared_ptr<IWindow> IWindow::Create(const FWindowSpecification& Specification)
+std::unique_ptr<IWindow> IWindow::Create(const FWindowSpecification& Specification)
 {
     m_Specification = Specification;
 
@@ -18,7 +18,7 @@ std::shared_ptr<IWindow> IWindow::Create(const FWindowSpecification& Specificati
     m_WindowState.bIsResizingEnabled = Specification.bEnableResizing;
 
     #if defined(STARLIGHT_PLATFORM_WIN64) || defined(STARLIGHT_PLATFORM_MAC) || defined(STARLIGHT_PLATFORM_LINUX)
-        return std::make_shared<CDesktopWindow>();
+        return std::make_unique<CDesktopWindow>();
     #else
         verifyEnginef(false, "Failed to create window '{}'! Unknown/unsupported platform!", Specification.Title)
         return nullptr;
