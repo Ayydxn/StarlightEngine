@@ -4,6 +4,7 @@
 #include "Events/WindowEvents.h"
 #include "Input/Input.h"
 #include "Misc/CommandLineParser.h"
+#include "Renderer/Renderer.h"
 
 extern bool bIsApplicationRunning;
 
@@ -15,6 +16,8 @@ CApplication::CApplication(const CApplicationSpecification& Specification)
     CLogging::Initialize();
 
     ENGINE_LOG_INFO_TAG("Core", "Initializing Starlight Engine...");
+
+    CRenderer::PreInitialize();
 
     FWindowSpecification ApplicationWindowSpecification;
     ApplicationWindowSpecification.Title = m_ApplicationSpecification.Name;
@@ -61,6 +64,7 @@ CApplication::CApplication(const CApplicationSpecification& Specification)
     m_ApplicationWindow->SetEventCallbackFunction([this](IEvent& Event) { return OnEvent(Event); });
 
     CInput::Initialize();
+    CRenderer::Initialize();
     
     DispatchEvent<CApplicationInitializeEvent>();
 }
@@ -82,6 +86,8 @@ CApplication::~CApplication()
     // Clearing the event queue.
     // This also ensures that we free the memory used by it.
     std::queue<std::function<void()>>().swap(m_EventQueue);
+
+    CRenderer::Shutdown();
 }
 
 void CApplication::OnEvent(IEvent& Event)
@@ -129,12 +135,16 @@ void CApplication::Start()
         for (ILayer* Layer : m_LayerManager.GetLayers())
             Layer->OnPreRender();
 
+        CRenderer::BeginFrame();
+
         OnRender();
 
         for (ILayer* Layer : m_LayerManager.GetLayers())
             Layer->OnRender();
 
         DispatchEvent<CApplicationRenderEvent>();
+
+        CRenderer::EndFrame();
 
         OnPostRender();
 

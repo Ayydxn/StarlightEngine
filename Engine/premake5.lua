@@ -21,6 +21,7 @@ project "Starlight Engine"
     {
         "%{IncludeDir.spdlog}",
         "%{IncludeDir.GLFW}",
+        "%{IncludeDir.Glad}",
         
         "%{prj.location}/Source",
         "%{prj.location}/Source/Runtime",
@@ -29,7 +30,13 @@ project "Starlight Engine"
 
     links
     {
-        "GLFW"
+        "GLFW",
+        "Glad"
+    }
+    
+    defines
+    {
+        "GLFW_INCLUDE_NONE"
     }
 
     filter "system:windows"
@@ -40,6 +47,11 @@ project "Starlight Engine"
             "STARLIGHT_PLATFORM_WIN64",
 
             "WIN32_LEAN_AND_MEAN"
+        }
+
+        links
+        {
+            "opengl32.lib"
         }
 
     filter "system:macosx"

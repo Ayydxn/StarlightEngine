@@ -47,6 +47,9 @@ void CDesktopWindow::Initialize()
     
     verifyEnginef(m_WindowHandle, "Failed to create window '{}'!", m_Specification.Title)
 
+    m_RHIContext = IRHIContext::Create(m_WindowHandle);
+    m_RHIContext->Initialize();
+
     SetWindowMode(m_Specification.WindowMode);
 
     EnableVSync(m_Specification.bEnableVSync);
@@ -209,7 +212,7 @@ void CDesktopWindow::ProcessEvents()
 
 void CDesktopWindow::SwapBuffers() const
 {
-    // TODO: (Ayydan) Implement per graphics API.
+    m_RHIContext->SwapBuffers();
 }
 
 std::pair<float, float> CDesktopWindow::GetPosition() const
@@ -236,7 +239,7 @@ void CDesktopWindow::CenterOnScreen() const
 
 void CDesktopWindow::EnableVSync(bool bEnableVSync)
 {
-    // TODO: (Ayydan) Implement per graphics API.
+    m_RHIContext->SetVSync(bEnableVSync);
 }
 
 void CDesktopWindow::SetWindowMode(EWindowMode NewWindowMode)

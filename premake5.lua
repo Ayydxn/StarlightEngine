@@ -59,4 +59,5 @@ group ""
 
 group "Dependencies"
     include "Engine/ThirdParty/GLFW"
+    include "Engine/ThirdParty/Glad"
 group ""
