@@ -95,6 +95,11 @@ project "Starlight Engine"
         }
 
     filter "configurations:Distribution"
+        links
+        {
+            "%{Library.ShaderC_Release}"
+        }
+        
         defines
         {
             "STARLIGHT_BUILD_DISTRIBUTION"
