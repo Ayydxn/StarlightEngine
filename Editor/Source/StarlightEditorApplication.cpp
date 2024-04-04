@@ -1,5 +1,6 @@
 ﻿#include "Application/Application.h"
 #include "Application/ApplicationEntryPoint.h"
+#include "RHICore/Shader.h"
 
 class CStarlightEditorLayer : public ILayer
 {
@@ -9,8 +10,10 @@ public:
     
     void OnAttach() override
     {
-        APPLICATION_LOG_INFO_TAG("Core", "Hello from the Starlight Editor layer!");
+        m_DefaultShader = IShader::Create("Resources/Shaders/DefaultShader.glsl");
     }
+private:
+    std::shared_ptr<IShader> m_DefaultShader;
 };
 
 class CStarlightEditorApplication : public CApplication

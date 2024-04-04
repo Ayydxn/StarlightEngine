@@ -22,10 +22,16 @@ project "Starlight Engine"
         "%{IncludeDir.spdlog}",
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.Glad}",
+        "%{IncludeDir.Vulkan}",
         
         "%{prj.location}/Source",
         "%{prj.location}/Source/Runtime",
         "%{prj.location}/Source/Runtime/Core"
+    }
+    
+    libdirs
+    {
+        "%{LibraryDir.Vulkan}"
     }
 
     links
@@ -67,12 +73,22 @@ project "Starlight Engine"
         }
 
     filter "configurations:Debug"
+        links
+        {
+            "%{Library.ShaderC_Debug}"
+        }
+        
         defines
         {
             "STARLIGHT_BUILD_DEBUG"
         }
 
     filter "configurations:Release"
+        links
+        {
+            "%{Library.ShaderC_Release}"
+        }
+        
         defines
         {
             "STARLIGHT_BUILD_RELEASE"
